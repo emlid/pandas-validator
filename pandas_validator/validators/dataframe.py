@@ -43,11 +43,11 @@ class DataFrameValidator(object):
 
     def _check_dataframe_size(self, df):
         if self.column_num is not None and len(df.columns) != self.column_num:
-            raise ValidationError('DataFrame columns number is not %s'
+            raise BasicValidationError('DataFrame columns number is not %s'
                                   % self.column_num)
 
         if self.row_num is not None and len(df.index) != self.row_num:
-            raise ValidationError('DataFrame rows number is not %s'
+            raise BasicValidationError('DataFrame rows number is not %s'
                                   % self.row_num)
 
     def is_valid(self, df, raise_exception=False, **kwargs):
@@ -57,7 +57,7 @@ class DataFrameValidator(object):
             self._run_index_and_columns_validator(df)
             self._run_column_validator(df)
             self._check_dataframe_size(df)
-        except ValidationError:
+        except (ValidationError, BasicValidationError):
             if not raise_exception:
                 return False
             raise

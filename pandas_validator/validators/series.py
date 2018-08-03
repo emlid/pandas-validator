@@ -84,4 +84,4 @@ class LambdaSeriesValidator(BaseSeriesValidator):
         super(LambdaSeriesValidator, self).validate(series)
 
         if (not self.function(series)):
-            raise ValidationError('Validator function returned False.')
+            raise BasicValidationError('Validator function returned False.')
