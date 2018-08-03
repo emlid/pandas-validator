@@ -12,14 +12,15 @@ class BaseSeriesValidator(object):
         self._check_type(series)
 
     def _check_type(self, series):
-        if (self.series_type is not None and
-                not series.dtype.type == self.series_type):
-            raise ValidationError('Series has the different type variables.')
+        if self.series_type is not None:
+            if not series.dtype.type == self.series_type:
+                error_type = ERROR_TYPES['different_types']
+                raise ValidationError('Series has the different type variables.', error_type, series.name)
 
     def is_valid(self, series):
         try:
             self.validate(series)
-        except ValidationError:
+        except (BasicValidationError, ValidationError):
             return False
         else:
             return True
@@ -34,19 +35,41 @@ class IntegerSeriesValidator(BaseSeriesValidator):
     def validate(self, series):
         super(IntegerSeriesValidator, self).validate(series)
 
-        if (self.max_value is not None and
-                len(series[series > self.max_value]) > 0):
-            raise ValidationError('Series has the value greater than max.')
+        self.check_max_values(series)
+        self.check_min_values(series)
 
-        if (self.min_value is not None and
-                len(series[series < self.min_value]) > 0):
-            raise ValidationError('Series has the value smaller than min.')
+    def check_max_values(self, series):
+        if self.max_value is not None:
+            check_list = series[series > self.max_value]
+            if len(check_list) > 0:
+                idx = check_list.index.tolist()
+                error_type = ERROR_TYPES['out_of_range']
+                raise ValidationError('Series has the value greater than max.', error_type, series.name, idx)
+
+    def check_min_values(self, series):
+        if self.min_value is not None:
+            check_list = series[series < self.min_value]
+            if len(check_list) > 0:
+                idx = check_list.index.tolist()
+                error_type = ERROR_TYPES['out_of_range']
+                raise ValidationError('Series has the value smaller than min.', error_type, series.name, idx)
 
 
 class FloatSeriesValidator(IntegerSeriesValidator):
     def __init__(self, series_type=np.float64, *args, **kwargs):
         super(FloatSeriesValidator, self).__init__(series_type=series_type,
                                                    *args, **kwargs)
+
+    def validate(self, series):
+        super(FloatSeriesValidator, self).validate(series)
+
+        self.check_nan_field(series)
+
+    def check_nan_field(self, series):
+        if series.isna().any():
+            idx = series[series.isnull()].index.tolist()
+            error_type = ERROR_TYPES['empty_field']
+            raise ValidationError('Float series has the empty field.', error_type, series.name, idx)
 
 
 class CharSeriesValidator(BaseSeriesValidator):
@@ -57,18 +80,32 @@ class CharSeriesValidator(BaseSeriesValidator):
 
     def _check_type(self, series):
         if len(series[series.map(lambda x: not isinstance(x, str))]) > 0:
-            raise ValidationError('Series has the different type variables.')
+            error_type = ERROR_TYPES['different_types']
+            raise ValidationError('Series has the different type variables.', error_type, series.name)
 
     def validate(self, series):
         super(CharSeriesValidator, self).validate(series)
 
-        if (self.max_length is not None and
-                series.map(lambda x: len(x)).max() > self.max_length):
-            raise ValidationError('Series has the value longer than max.')
+        self.check_max_length(series)
+        self.check_min_length(series)
 
-        if (self.min_length is not None and
-                series.map(lambda x: len(x)).min() < self.min_length):
-            raise ValidationError('Series has the value shorter than min.')
+    def check_max_length(self, series):
+        if self.max_length is not None:
+            series_str_sizes = series.str.len()
+            oversized = series_str_sizes[series_str_sizes > self.max_length]
+            if len(oversized) > 0:
+                idx = oversized.index.tolist()
+                error_type = ERROR_TYPES['string_size']
+                raise ValidationError('Series has the length greater than max.', error_type, series.name, idx)
+
+    def check_min_length(self, series):
+        if self.min_length is not None:
+            series_str_sizes = series.str.len()
+            smallsized = series_str_sizes[series_str_sizes < self.min_length]
+            if len(smallsized) > 0:
+                idx = smallsized.index.tolist()
+                error_type = ERROR_TYPES['string_size']
+                raise ValidationError('Series has the length smaller than min.', error_type, series.name, idx)
 
 
 class LambdaSeriesValidator(BaseSeriesValidator):

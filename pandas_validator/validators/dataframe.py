@@ -1,6 +1,6 @@
 import warnings
 
-from pandas_validator.validators.columns import ColumnValidatorMixin, FloatColumnValidator, CharColumnValidator
+from pandas_validator.validators.columns import ColumnValidatorMixin
 from pandas_validator.validators.index import IndexValidator, ColumnsValidator
 from pandas_validator.core.exceptions import BasicValidationError, ValidationError
 
