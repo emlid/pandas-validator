@@ -1,4 +1,4 @@
-from ..core.exceptions import ValidationError
+from ..core.exceptions import BasicValidationError
 
 
 class BaseIndexValidator(object):
@@ -12,16 +12,16 @@ class BaseIndexValidator(object):
 
     def _check_size(self, index):
         if self.size is not None and index.size != self.size:
-            raise ValidationError('Index has the different size.')
+            raise BasicValidationError('Index has the different size.')
 
     def _check_type(self, index):
         if self.type is not None and index.dtype.type != self.type:
-            raise ValidationError('Index has the different type.')
+            raise BasicValidationError('Index has the different type.')
 
     def is_valid(self, index):
         try:
             self.validate(index)
-        except ValidationError:
+        except BasicValidationError:
             return False
         else:
             return True

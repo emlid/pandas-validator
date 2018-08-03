@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 import pandas_validator as pv
-from pandas_validator.core.exceptions import ValidationError
+from pandas_validator.core.exceptions import BasicValidationError
 
 
 class BaseIndexValidatorTest(TestCase):
@@ -16,8 +16,8 @@ class BaseIndexValidatorTest(TestCase):
 
     def test_is_invalid_when_size_is_not_ok(self):
         index = pd.Index([0, 1, 2, 3])
-        self.assertRaises(ValidationError, self.validator.validate, index)
+        self.assertRaises(BasicValidationError, self.validator.validate, index)
 
     def test_is_invalid_when_type_is_not_ok(self):
         index = pd.Index(['a', 'b', 'c'])
-        self.assertRaises(ValidationError, self.validator.validate, index)
+        self.assertRaises(BasicValidationError, self.validator.validate, index)
