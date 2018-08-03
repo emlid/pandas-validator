@@ -1,4 +1,4 @@
-from ..core.exceptions import BasicValidationError
+from pandas_validator.core.exceptions import BasicValidationError
 
 
 class BaseIndexValidator(object):

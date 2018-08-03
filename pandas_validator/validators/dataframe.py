@@ -1,8 +1,8 @@
 import warnings
 
-from .columns import ColumnValidatorMixin
-from .index import IndexValidator, ColumnsValidator
-from ..core.exceptions import ValidationError
+from pandas_validator.validators.columns import ColumnValidatorMixin, FloatColumnValidator, CharColumnValidator
+from pandas_validator.validators.index import IndexValidator, ColumnsValidator
+from pandas_validator.core.exceptions import BasicValidationError, ValidationError
 
 
 class DataFrameValidator(object):
