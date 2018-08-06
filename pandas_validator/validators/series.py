@@ -66,7 +66,7 @@ class FloatSeriesValidator(IntegerSeriesValidator):
         self.check_nan_field(series)
 
     def check_nan_field(self, series):
-        if series.isna().any():
+        if series.isnull().any():
             idx = series[series.isnull()].index.tolist()
             error_type = ERROR_TYPES['empty_field']
             raise ValidationError('Float series has the empty field.', error_type, series.name, idx)
