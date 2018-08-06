@@ -5,6 +5,7 @@ from .validators.series import (
     IntegerSeriesValidator,
     FloatSeriesValidator,
     CharSeriesValidator,
+    EncodingSeriesValidator,
     LambdaSeriesValidator,
 )
 from .validators.columns import (
@@ -12,6 +13,7 @@ from .validators.columns import (
     FloatColumnValidator,
     CharColumnValidator,
     LambdaColumnValidator,
+    EncodingColumnValidator
 )
 from .validators.dataframe import (
     DataFrameValidator,
