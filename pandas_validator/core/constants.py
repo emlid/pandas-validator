@@ -4,4 +4,5 @@ ERROR_TYPES = {
     'different_types': 2,
     'string_size': 3,
     'encoding_error': 4,
+    'required_field_error': 5,
 }

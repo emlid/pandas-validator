@@ -7,14 +7,23 @@ from pandas_validator.validators.series import (
     EncodingSeriesValidator
 )
 
+from pandas_validator.core.exceptions import ValidationError
+from pandas_validator.core.constants import ERROR_TYPES
+
 
 class ColumnValidatorMixin(BaseSeriesValidator):
-    def __init__(self, label, *args, **kwargs):
+    def __init__(self, label, required=True, *args, **kwargs):
         super(ColumnValidatorMixin, self).__init__(*args, **kwargs)
         self.label = label
+        self.required = required
 
     def validate(self, dataframe):
-        super(ColumnValidatorMixin, self).validate(dataframe[self.label])
+        try:
+            super(ColumnValidatorMixin, self).validate(dataframe[self.label])
+        except KeyError:
+            if self.required:
+                error_type = ERROR_TYPES['required_field_error']
+                raise ValidationError('Series has the value greater than max.', error_type, self.label)
 
 
 class IntegerColumnValidator(ColumnValidatorMixin, IntegerSeriesValidator):
