@@ -108,6 +108,30 @@ class CharSeriesValidator(BaseSeriesValidator):
                 raise ValidationError('Series has the length smaller than min.', error_type, series.name, idx)
 
 
+class EncodingSeriesValidator(BaseSeriesValidator):
+    def __init__(self, *args, **kwargs):
+        super(EncodingSeriesValidator, self).__init__(*args, **kwargs)
+
+    def validate(self, series):
+        super(EncodingSeriesValidator, self).validate(series)
+
+        not_english = ~series.apply(self.check_encoding)
+        if not_english.any():
+            idx = series[not_english].index.tolist()
+            error_type = ERROR_TYPES['encoding_error']
+            raise ValidationError('Series has non English characters', error_type, series.name, idx)
+
+    @staticmethod
+    def check_encoding(string):
+        try:
+            string.encode('utf-8').decode('ascii')
+            string.encode('ascii')
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            return False
+        else:
+            return True
+
+
 class LambdaSeriesValidator(BaseSeriesValidator):
     def __init__(self, function, *args, **kwargs):
         super(LambdaSeriesValidator, self).__init__(*args, **kwargs)
