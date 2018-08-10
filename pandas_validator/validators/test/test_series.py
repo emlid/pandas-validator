@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from unittest import TestCase
 import pandas as pd
 import numpy as np
@@ -64,6 +66,10 @@ class FloatSeriesValidatorTest(TestCase):
         series = pd.Series([0., 1., 2.1])
         self.assertFalse(self.validator.is_valid(series))
 
+    def test_is_invalid_by_empty_field(self):
+        series = pd.Series([0., None])
+        self.assertFalse(self.validator.is_valid(series))
+
 
 class CharSeriesValidatorTest(TestCase):
     def setUp(self):
@@ -93,3 +99,16 @@ class LambdaSeriesValidatorTest(TestCase):
     def test_is_invalid_when_lambda_returns_false(self):
         validator = pv.LambdaSeriesValidator(lambda s: False)
         self.assertFalse(validator.is_valid(self.series))
+
+
+class EncodingSeriesValidatorTest(TestCase):
+    def setUp(self):
+        self.validator = pv.EncodingSeriesValidator()
+
+    def test_is_valid(self):
+        series = pd.Series(['', 'ab', 'abcd'])
+        self.assertTrue(self.validator.is_valid(series))
+
+    def test_is_invalid(self):
+        series = pd.Series(['', u'тратата', 'abcd'])
+        self.assertFalse(self.validator.is_valid(series))
