@@ -8,10 +8,10 @@ README = open(os.path.join(BASE_PATH, 'README.rst')).read()
 CHANGES = open(os.path.join(BASE_PATH, 'CHANGES.rst')).read()
 
 __author__ = 'Masashi Shibata <contact@c-bata.link>'
-__version__ = '0.5.0'
+__version__ = '0.6.0'
 __license__ = 'MIT License'
 __author_email__ = 'contact@c-bata.link'
-__url__ = 'https://github.com/c-bata/pandas-validator'
+__url__ = 'https://github.com/emlid/pandas-validator'
 __description__ = 'Validate the pandas objects such as DataFrame and Series.'
 __classifiers__ = [
     'Development Status :: 3 - Alpha',
