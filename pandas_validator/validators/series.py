@@ -4,6 +4,10 @@ from pandas_validator.core.exceptions import BasicValidationError, ValidationErr
 from pandas_validator.core.constants import ERROR_TYPES
 
 
+def convert_list_to_simple_int(numpy_list):
+    return [int(x) for x in numpy_list]
+    
+    
 class BaseSeriesValidator(object):
     def __init__(self, series_type=None):
         self.series_type = series_type
@@ -42,7 +46,8 @@ class IntegerSeriesValidator(BaseSeriesValidator):
         if self.max_value is not None:
             check_list = series[series > self.max_value]
             if len(check_list) > 0:
-                idx = check_list.index.tolist()
+                numpy_idx = check_list.index.tolist()
+                idx = convert_list_to_simple_int(numpy_idx)
                 error_type = ERROR_TYPES['out_of_range']
                 raise ValidationError('Series has the value greater than max.', error_type, series.name, idx)
 
@@ -50,7 +55,8 @@ class IntegerSeriesValidator(BaseSeriesValidator):
         if self.min_value is not None:
             check_list = series[series < self.min_value]
             if len(check_list) > 0:
-                idx = check_list.index.tolist()
+                numpy_idx = check_list.index.tolist()
+                idx = convert_list_to_simple_int(numpy_idx)
                 error_type = ERROR_TYPES['out_of_range']
                 raise ValidationError('Series has the value smaller than min.', error_type, series.name, idx)
 
@@ -67,7 +73,8 @@ class FloatSeriesValidator(IntegerSeriesValidator):
 
     def check_nan_field(self, series):
         if series.isnull().any():
-            idx = series[series.isnull()].index.tolist()
+            numpy_idx = series[series.isnull()].index.tolist()
+            idx = convert_list_to_simple_int(numpy_idx)
             error_type = ERROR_TYPES['empty_field']
             raise ValidationError('Float series has the empty field.', error_type, series.name, idx)
 
@@ -94,7 +101,8 @@ class CharSeriesValidator(BaseSeriesValidator):
             series_str_sizes = series.str.len()
             oversized = series_str_sizes[series_str_sizes > self.max_length]
             if len(oversized) > 0:
-                idx = oversized.index.tolist()
+                numpy_idx = oversized.index.tolist()
+                idx = convert_list_to_simple_int(numpy_idx)
                 error_type = ERROR_TYPES['string_size']
                 raise ValidationError('Series has the length greater than max.', error_type, series.name, idx)
 
@@ -103,7 +111,8 @@ class CharSeriesValidator(BaseSeriesValidator):
             series_str_sizes = series.str.len()
             smallsized = series_str_sizes[series_str_sizes < self.min_length]
             if len(smallsized) > 0:
-                idx = smallsized.index.tolist()
+                numpy_idx = smallsized.index.tolist()
+                idx = convert_list_to_simple_int(numpy_idx)
                 error_type = ERROR_TYPES['string_size']
                 raise ValidationError('Series has the length smaller than min.', error_type, series.name, idx)
 
@@ -117,7 +126,8 @@ class EncodingSeriesValidator(BaseSeriesValidator):
 
         not_english = ~series.apply(self.check_encoding)
         if not_english.any():
-            idx = series[not_english].index.tolist()
+            numpy_idx = series[not_english].index.tolist()
+            idx = convert_list_to_simple_int(numpy_idx)
             error_type = ERROR_TYPES['encoding_error']
             raise ValidationError('Series has non English characters', error_type, series.name, idx)
 
