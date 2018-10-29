@@ -71,6 +71,35 @@ class FloatSeriesValidatorTest(TestCase):
         self.assertFalse(self.validator.is_valid(series))
 
 
+class NumberSeriesValidatorTest(TestCase):
+    def setUp(self):
+        self.validator = pv.NumberSeriesValidator(min_value=0, max_value=2)
+
+    def test_is_valid(self):
+        series = pd.Series([0., 1., 2.])
+        self.assertTrue(self.validator.is_valid(series))
+
+    def test_is_valid_when_given_integer_series(self):
+        series = pd.Series([0, 1, 2])
+        self.assertTrue(self.validator.is_valid(series))
+
+    def test_is_invalid_by_too_low_value(self):
+        series = pd.Series([-0.1, 0., 1.])
+        self.assertFalse(self.validator.is_valid(series))
+
+    def test_is_invalid_by_too_high_value(self):
+        series = pd.Series([0., 1., 2.1])
+        self.assertFalse(self.validator.is_valid(series))
+
+    def test_is_invalid_by_empty_field(self):
+        series = pd.Series([0., None])
+        self.assertFalse(self.validator.is_valid(series))
+
+    def test_is_invalid_by_chars(self):
+        series = pd.Series(['', 'ab', 'abcde'])
+        self.assertFalse(self.validator.is_valid(series))
+
+
 class CharSeriesValidatorTest(TestCase):
     def setUp(self):
         self.validator = pv.CharSeriesValidator(min_length=0, max_length=4)
