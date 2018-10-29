@@ -17,7 +17,7 @@ class BaseSeriesValidator(object):
 
     def _check_type(self, series):
         if self.series_type is not None:
-            if not series.dtype.type == self.series_type:
+            if not np.issubdtype(series.dtype.type, self.series_type):
                 error_type = ERROR_TYPES['different_types']
                 raise ValidationError('Series has the different type variables.', error_type, series.name)
 
@@ -77,6 +77,12 @@ class FloatSeriesValidator(IntegerSeriesValidator):
             idx = convert_list_to_simple_int(numpy_idx)
             error_type = ERROR_TYPES['empty_field']
             raise ValidationError('Float series has the empty field.', error_type, series.name, idx)
+
+
+class NumberSeriesValidator(FloatSeriesValidator):
+    def __init__(self, series_type=np.number, *args, **kwargs):
+        super(NumberSeriesValidator, self).__init__(series_type=series_type,
+                                                    *args, **kwargs)
 
 
 class CharSeriesValidator(BaseSeriesValidator):

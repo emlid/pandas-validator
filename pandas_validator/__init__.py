@@ -4,6 +4,7 @@ from .validators.series import (
     BaseSeriesValidator,
     IntegerSeriesValidator,
     FloatSeriesValidator,
+    NumberSeriesValidator,
     CharSeriesValidator,
     EncodingSeriesValidator,
     LambdaSeriesValidator,
@@ -12,6 +13,7 @@ from .validators.columns import (
     IntegerColumnValidator,
     FloatColumnValidator,
     CharColumnValidator,
+    NumberColumnValidator,
     LambdaColumnValidator,
     EncodingColumnValidator
 )
